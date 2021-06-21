@@ -15,6 +15,9 @@ type Gradients_type {
 
 type Query {
   user_login(data: user_infoQueryInput!): user_info
+}
+
+type Mutation {
   user_register(data: user_registerInput!): user_info
 }
 
@@ -43,4 +46,5 @@ type user_info {
 
 schema {
   query: Query
+  mutation: Mutation
 }

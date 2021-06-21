@@ -20,6 +20,8 @@ module.exports = {
           : user
         : new Error("Invalid Username");
     },
+  },
+  Mutation: {
     async user_register(parent, args, context, info) {
       const user = new User({
         Username: args.data.Username,

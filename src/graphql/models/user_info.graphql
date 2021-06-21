@@ -1,5 +1,8 @@
 type Query {
   user_login(data: user_infoQueryInput!): user_info
+}
+
+type Mutation {
   user_register(data: user_registerInput!): user_info
 }
 
