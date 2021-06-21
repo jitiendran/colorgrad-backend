@@ -20,4 +20,4 @@ const userSchema = new mongoose.Schema({
   Rating: Number,
 });
 
-module.exports = mongoose.model("colorgrad", userSchema, "user_info");
+module.exports = mongoose.model("user_info", userSchema);

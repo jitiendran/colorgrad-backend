@@ -10,8 +10,9 @@ module.exports = {
           console.log(err);
         } else {
           user = result;
-          if (user !== null && result.Password !== args.data.Password)
+          if (user !== null && result.Password !== args.data.Password) {
             wrongpassword = true;
+          }
         }
       });
       return user !== null
