@@ -15,7 +15,7 @@ type Gradients_type {
 }
 
 input insertGradientInput {
-  _id: String!
+  UserId: String!
   Colors: [String]!
   Type: String!
   Direction: String!

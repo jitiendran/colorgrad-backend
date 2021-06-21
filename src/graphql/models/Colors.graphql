@@ -1,6 +1,24 @@
+type Query {
+  getColors(data: getColorsInput!): [Colors_type]
+}
+
+type Mutation {
+  insertColors(data: insertColorsInput!): Colors_type
+}
+
 type Colors_type {
-  Username: String
+  _id: String
   Colors: String
   Type: String
   UsedBy: Int
+}
+
+input insertColorsInput {
+  UserId: String
+  Colors: String
+  Type: String
+}
+
+input getColorsInput {
+  UserId: String!
 }

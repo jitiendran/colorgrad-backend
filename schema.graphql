@@ -1,18 +1,30 @@
-type Colors_type {
-  Username: String
-  Colors: String
-  Type: String
-  UsedBy: Int
-}
-
 type Query {
+  getColors(data: getColorsInput!): [Colors_type]
   getGradients(data: getColorInput!): [Gradients_type]
   user_login(data: user_infoQueryInput!): user_info
 }
 
 type Mutation {
+  insertColors(data: insertColorsInput!): Colors_type
   insertGradient(data: insertGradientInput!): Gradients_type
   user_register(data: user_registerInput!): user_info
+}
+
+type Colors_type {
+  _id: String
+  Colors: String
+  Type: String
+  UsedBy: Int
+}
+
+input insertColorsInput {
+  UserId: String
+  Colors: String
+  Type: String
+}
+
+input getColorsInput {
+  UserId: String!
 }
 
 type Gradients_type {
@@ -24,7 +36,7 @@ type Gradients_type {
 }
 
 input insertGradientInput {
-  _id: String!
+  UserId: String!
   Colors: [String]!
   Type: String!
   Direction: String!

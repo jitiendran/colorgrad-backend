@@ -16,7 +16,7 @@ module.exports = {
     async insertGradient(parent, args, context, info) {
       let results = null;
       const gradient = new Gradient({
-        UserId: args.data._id,
+        UserId: args.data.UserId,
         Colors: args.data.Colors,
         Type: args.data.Type,
         Direction: args.data.Direction,
