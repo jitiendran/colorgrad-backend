@@ -1,0 +1,7 @@
+type Gradients_type {
+  Username: String
+  Colors: [String]
+  Type: String
+  Direction: String
+  UsedBy: Int
+}

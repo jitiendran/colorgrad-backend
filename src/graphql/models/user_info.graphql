@@ -1,0 +1,27 @@
+type Query {
+  user_login(data: user_infoQueryInput!): user_info
+  user_register(data: user_registerInput!): user_info
+}
+
+input user_infoQueryInput {
+  Username: String!
+  Password: String!
+}
+
+input user_registerInput {
+  Username: String
+  Password: String
+  Email: String
+}
+
+type user_info {
+  Username: String
+  Email: String
+  Password: String
+  LinkedinProfile: String
+  GithubProfile: String
+  Friends: [String]
+  Colors: [Colors_type]
+  Gradients: [Gradients_type]
+  Rating: Int
+}

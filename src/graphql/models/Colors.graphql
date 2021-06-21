@@ -1,0 +1,6 @@
+type Colors_type {
+  Username: String
+  Colors: String
+  Type: String
+  UsedBy: Int
+}
