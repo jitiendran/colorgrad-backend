@@ -1,5 +1,6 @@
 type Query {
-  getColors(data: getColorsInput!): [Colors_type]
+  getMyColors(data: getColorsInput!): [Colors_type]
+  getColors: [Colors_type]
 }
 
 type Mutation {
@@ -10,6 +11,7 @@ type Colors_type {
   _id: String
   Colors: String
   Type: String
+  Favourite: Boolean
   UsedBy: Int
 }
 

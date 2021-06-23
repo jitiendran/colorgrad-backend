@@ -1,5 +1,6 @@
 type Query {
-  getGradients(data: getColorInput!): [Gradients_type]
+  getMyGradients(data: getColorInput!): [Gradients_type]
+  getGradients: [Gradients_type]
 }
 
 type Mutation {

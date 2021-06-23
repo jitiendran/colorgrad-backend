@@ -4,6 +4,7 @@ const colorSchema = mongoose.Schema({
   UserId: String,
   Colors: String,
   Type: String,
+  Favourite: Boolean,
   UsedBy: Number,
 });
 

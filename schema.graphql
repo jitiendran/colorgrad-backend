@@ -1,19 +1,23 @@
 type Query {
-  getColors(data: getColorsInput!): [Colors_type]
-  getGradients(data: getColorInput!): [Gradients_type]
-  user_login(data: user_infoQueryInput!): user_info
+  getMyColors(data: getColorsInput!): [Colors_type]
+  getColors: [Colors_type]
+  getMyGradients(data: getColorInput!): [Gradients_type]
+  getGradients: [Gradients_type]
+  user_login(data: user_loginInput!): user_info
 }
 
 type Mutation {
   insertColors(data: insertColorsInput!): Colors_type
   insertGradient(data: insertGradientInput!): Gradients_type
   user_register(data: user_registerInput!): user_info
+  add_friend(data: add_friendInput!): added_friend
 }
 
 type Colors_type {
   _id: String
   Colors: String
   Type: String
+  Favourite: Boolean
   UsedBy: Int
 }
 
@@ -46,26 +50,37 @@ input getColorInput {
   UserId: String!
 }
 
-input user_infoQueryInput {
+input user_loginInput {
   Username: String!
   Password: String!
 }
 
 input user_registerInput {
-  Username: String
-  Password: String
-  Email: String
+  Username: String!
+  Password: String!
+  Email: String!
+}
+
+input add_friendInput {
+  _id: String!
+  UserId: String!
+}
+
+type added_friend {
+  Added: Boolean!
 }
 
 type user_info {
+  _id: String
   Username: String
   Email: String
   Password: String
   LinkedinProfile: String
   GithubProfile: String
-  Friends: [String]
-  Colors: [Colors_type]
-  Gradients: [Gradients_type]
+  Followers: [String]
+  Following: [String]
+  No_Of_Colors: Int
+  No_Of_Gradients: Int
   Rating: Int
 }
 

@@ -5,6 +5,7 @@ const gradientSchema = mongoose.Schema({
   Colors: [String],
   Type: String,
   Direction: String,
+  Favourite: Boolean,
   UsedBy: Number,
 });
 

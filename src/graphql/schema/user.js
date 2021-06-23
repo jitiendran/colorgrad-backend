@@ -6,17 +6,10 @@ const userSchema = new mongoose.Schema({
   Password: String,
   LinkedinProfile: String,
   GithubProfile: String,
-  Friends: [String],
-  Colors: [{ Username: String, Colors: String, Type: String, UsedBy: Number }],
-  Gradients: [
-    {
-      Username: String,
-      Colors: [String],
-      Type: String,
-      Direction: String,
-      UsedBy: Number,
-    },
-  ],
+  Followers: [String],
+  Following: [String],
+  No_Of_Colors: Number,
+  No_Of_Gradients: Number,
   Rating: Number,
 });
 

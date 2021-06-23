@@ -30,9 +30,10 @@ module.exports = {
         Password: args.data.Password,
         LinkedinProfile: null,
         GithubProfile: null,
-        Friends: [],
-        Colors: [],
-        Gradients: [],
+        Followers: [],
+        Following: [],
+        No_Of_Colors: 0,
+        No_Of_Gradients: 0,
         Rating: 0,
       });
 
@@ -40,6 +41,30 @@ module.exports = {
         console.log(result._id);
       });
       return user;
+    },
+
+    async add_friend(parent, args, context, info) {
+      let result;
+      await User.findOneAndUpdate(
+        { _id: args.data._id },
+        { Following: [args.data.UserId] },
+        (err, result) => {
+          if (err) console.log(err);
+          else {
+            User.findOneAndUpdate(
+              { _id: args.data.UserId },
+              { Followers: [args.data._id] },
+              (err, result) => {
+                if (err) console.log(err);
+                else {
+                  result = { Added: true };
+                }
+              }
+            );
+          }
+        }
+      );
+      return result;
     },
   },
 };
