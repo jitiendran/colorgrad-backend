@@ -104,7 +104,7 @@ module.exports = {
         async add_favouriteGradient(parent, args, context, info) {
             let updated = false;
 
-            await User.findOneAndUpdate(
+            await User.findByIdAndUpdate(
                 { _id: args.data.UserId },
                 {
                     Gradients: [
@@ -126,6 +126,40 @@ module.exports = {
             );
 
             return updated;
+        },
+
+        async remove_favouriteColor(parent, args, context, info) {
+            let removed = false;
+
+            await User.findByIdAndUpdate(
+                args.data.UserId,
+                { $pull: { Colors: { ColorId: args.data.ColorId } } },
+                (err, result) => {
+                    if (err) console.log(err);
+                    else {
+                        removed = true;
+                    }
+                }
+            );
+
+            return removed;
+        },
+
+        async remove_favouriteGradient(parent, args, context, info) {
+            let removed = false;
+
+            await User.findByIdAndUpdate(
+                args.data.UserId,
+                { $pull: { Gradients: { GradientId: args.data.GradientId } } },
+                (err, result) => {
+                    if (err) console.log(err);
+                    else {
+                        removed = true;
+                    }
+                }
+            );
+
+            return removed;
         },
     },
 };

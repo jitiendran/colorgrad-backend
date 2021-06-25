@@ -16,9 +16,9 @@ type Colors_type {
 }
 
 input insertColorsInput {
-    UserId: String
-    Colors: String
-    Type: String
+    UserId: String!
+    Colors: String!
+    Type: String!
 }
 
 input copyColorsInput {
