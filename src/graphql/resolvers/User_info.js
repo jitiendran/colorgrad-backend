@@ -100,5 +100,32 @@ module.exports = {
 
             return added;
         },
+
+        async add_favouriteGradient(parent, args, context, info) {
+            let updated = false;
+
+            await User.findOneAndUpdate(
+                { _id: args.data.UserId },
+                {
+                    Gradients: [
+                        {
+                            GradientId: args.data.GradientId,
+                            Colors: args.data.Colors,
+                            Type: args.data.Type,
+                            Direction: args.data.Direction,
+                            UsedBy: args.data.UsedBy,
+                        },
+                    ],
+                },
+                (err, result) => {
+                    if (err) console.log(err);
+                    else {
+                        updated = true;
+                    }
+                }
+            );
+
+            return updated;
+        },
     },
 };
