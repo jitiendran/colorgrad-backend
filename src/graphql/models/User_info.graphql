@@ -4,7 +4,8 @@ type Query {
 
 type Mutation {
     user_register(data: user_registerInput!): user_info
-    add_friend(data: add_friendInput!): added_friend
+    add_friend(data: add_friendInput!): Boolean!
+    remove_friend(data: remove_friendInput!): Boolean!
     add_favouriteColor(data: add_favouriteColorInput!): Boolean!
     add_favouriteGradient(data: add_favouriteGradientInput!): Boolean!
     remove_favouriteColor(data: remove_favouriteColorInput!): Boolean!
@@ -24,7 +25,14 @@ input user_registerInput {
 
 input add_friendInput {
     _id: String!
+    Myname: String!
     UserId: String!
+    Username: String!
+}
+
+input remove_friendInput {
+    UserId: String!
+    FriendId: String!
 }
 
 type added_friend {

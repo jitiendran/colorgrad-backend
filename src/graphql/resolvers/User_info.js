@@ -52,27 +52,52 @@ module.exports = {
         },
 
         async add_friend(parent, args, context, info) {
-            let result;
-            await User.findOneAndUpdate(
-                { _id: args.data._id },
-                { Following: [args.data.UserId] },
+            let added = false;
+            await User.findByIdAndUpdate(args.data._id, {
+                Following: [
+                    {
+                        _id: args.data.UserId,
+                        Username: args.data.Username,
+                    },
+                ],
+            }).exec();
+
+            await User.findByIdAndUpdate(
+                args.data.UserId,
+                {
+                    Followers: [
+                        {
+                            _id: args.data._id,
+                            Username: args.data.Myname,
+                        },
+                    ],
+                },
                 (err, result) => {
                     if (err) console.log(err);
                     else {
-                        User.findOneAndUpdate(
-                            { _id: args.data.UserId },
-                            { Followers: [args.data._id] },
-                            (err, result) => {
-                                if (err) console.log(err);
-                                else {
-                                    result = { Added: true };
-                                }
-                            }
-                        );
+                        added = true;
                     }
                 }
             );
-            return result;
+            return added;
+        },
+
+        async remove_friend(parent, args, context, info) {
+            let removed = false;
+
+            await User.findByIdAndUpdate(args.data.UserId, {
+                $pull: { Following: { _id: args.data.FriendId } },
+            }).exec();
+
+            try {
+                await User.findByIdAndUpdate(args.data.FriendId, {
+                    $pull: { Followers: { _id: args.data.UserId } },
+                });
+                removed = true;
+            } catch {
+                throw new Error("Cannot Remove the Friend");
+            }
+            return removed;
         },
 
         async add_favouriteColor(parent, args, context, info) {
