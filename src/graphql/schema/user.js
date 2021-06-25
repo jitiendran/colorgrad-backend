@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     GithubProfile: String,
     Colors: [
         {
-            UserId: String,
+            ColorId: String,
             Colors: String,
             Type: String,
             UsedBy: Number,
@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     ],
     Gradients: [
         {
-            UserId: String,
+            GradientId: String,
             Colors: [String],
             Type: String,
             Direction: String,

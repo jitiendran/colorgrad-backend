@@ -5,6 +5,7 @@ type Query {
 type Mutation {
     user_register(data: user_registerInput!): user_info
     add_friend(data: add_friendInput!): added_friend
+    add_favouriteColor(data: add_favouriteColorInput!): Boolean
 }
 
 input user_loginInput {
@@ -25,6 +26,14 @@ input add_friendInput {
 
 type added_friend {
     Added: Boolean!
+}
+
+input add_favouriteColorInput {
+    UserId: String!
+    ColorId: String!
+    Colors: String!
+    Type: String!
+    UsedBy: Int!
 }
 
 type user_info {

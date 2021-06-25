@@ -74,5 +74,31 @@ module.exports = {
             );
             return result;
         },
+
+        async add_favouriteColor(parent, args, context, info) {
+            let added = false;
+
+            await User.findByIdAndUpdate(
+                { _id: args.data.UserId },
+                {
+                    Colors: [
+                        {
+                            ColorId: args.data.ColorId,
+                            Colors: args.data.Colors,
+                            Type: args.data.Type,
+                            UsedBy: args.data.UsedBy,
+                        },
+                    ],
+                },
+                (err, result) => {
+                    if (err) console.log(err);
+                    else {
+                        added = true;
+                    }
+                }
+            );
+
+            return added;
+        },
     },
 };
