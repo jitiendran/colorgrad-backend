@@ -3,7 +3,7 @@ const User = require("../schema/user");
 const Rating = require("../functions/rating");
 const Uses = require("../functions/usedby");
 const Contributions = require("../functions/contribution");
-const FindUser = require("../functions/finduser");
+const FindUser = require("../functions/finduser_by_color");
 
 module.exports = {
     Query: {

@@ -10,6 +10,7 @@ type Mutation {
   insertColors(data: insertColorsInput!): Colors_type
   copyColors(data: copyColorsInput!): Boolean!
   insertGradient(data: insertGradientInput!): Gradients_type
+  copyGradient(data: copyGradientInput!): Boolean!
   user_register(data: user_registerInput!): user_info
   add_friend(data: add_friendInput!): added_friend
 }
@@ -52,6 +53,10 @@ input insertGradientInput {
 
 input getColorInput {
   UserId: String!
+}
+
+input copyGradientInput {
+  GradientId: String!
 }
 
 input user_loginInput {

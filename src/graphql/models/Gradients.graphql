@@ -5,6 +5,7 @@ type Query {
 
 type Mutation {
     insertGradient(data: insertGradientInput!): Gradients_type
+    copyGradient(data: copyGradientInput!): Boolean!
 }
 
 type Gradients_type {
@@ -24,4 +25,8 @@ input insertGradientInput {
 
 input getColorInput {
     UserId: String!
+}
+
+input copyGradientInput {
+    GradientId: String!
 }
