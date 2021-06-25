@@ -8,6 +8,7 @@ type Query {
 
 type Mutation {
   insertColors(data: insertColorsInput!): Colors_type
+  copyColors(data: copyColorsInput!): Boolean!
   insertGradient(data: insertGradientInput!): Gradients_type
   user_register(data: user_registerInput!): user_info
   add_friend(data: add_friendInput!): added_friend
@@ -17,7 +18,6 @@ type Colors_type {
   _id: String
   Colors: String
   Type: String
-  Favourite: Boolean
   UsedBy: Int
 }
 
@@ -25,6 +25,10 @@ input insertColorsInput {
   UserId: String
   Colors: String
   Type: String
+}
+
+input copyColorsInput {
+  ColorId: String
 }
 
 input getColorsInput {
@@ -77,6 +81,8 @@ type user_info {
   Password: String
   LinkedinProfile: String
   GithubProfile: String
+  Colors: [Colors_type]
+  Gradients: [Gradients_type]
   Followers: [String]
   Following: [String]
   No_Of_Colors: Int

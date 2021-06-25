@@ -1,26 +1,30 @@
 type Query {
-  getMyColors(data: getColorsInput!): [Colors_type]
-  getColors: [Colors_type]
+    getMyColors(data: getColorsInput!): [Colors_type]
+    getColors: [Colors_type]
 }
 
 type Mutation {
-  insertColors(data: insertColorsInput!): Colors_type
+    insertColors(data: insertColorsInput!): Colors_type
+    copyColors(data: copyColorsInput!): Boolean!
 }
 
 type Colors_type {
-  _id: String
-  Colors: String
-  Type: String
-  Favourite: Boolean
-  UsedBy: Int
+    _id: String
+    Colors: String
+    Type: String
+    UsedBy: Int
 }
 
 input insertColorsInput {
-  UserId: String
-  Colors: String
-  Type: String
+    UserId: String
+    Colors: String
+    Type: String
+}
+
+input copyColorsInput {
+    ColorId: String
 }
 
 input getColorsInput {
-  UserId: String!
+    UserId: String!
 }
