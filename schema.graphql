@@ -1,6 +1,7 @@
 type Query {
   getMyColors(data: getColorsInput!): [Colors_type]
   getColors: [Colors_type]
+  getPopularColors: [Colors_type]
   getMyGradients(data: getColorInput!): [Gradients_type]
   getGradients: [Gradients_type]
   user_login(data: user_loginInput!): user_info

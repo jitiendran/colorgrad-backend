@@ -28,6 +28,11 @@ module.exports = {
             });
             return colors;
         },
+
+        async getPopularColors(parent, args, context, info) {
+            let colors = await Color.find({}).lean();
+            return colors;
+        },
     },
     Mutation: {
         async insertColors(parent, args, context, info) {

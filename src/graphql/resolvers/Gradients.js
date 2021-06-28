@@ -8,13 +8,7 @@ const FindUser = require("../functions/finduser_by_gradient");
 module.exports = {
     Query: {
         async getGradients() {
-            let gradients = [];
-            await Gradient.find({}, (err, result) => {
-                if (err) console.log(err);
-                else {
-                    gradients = result;
-                }
-            });
+            let gradients = await Gradient.find({}).lean();
             return gradients;
         },
 
