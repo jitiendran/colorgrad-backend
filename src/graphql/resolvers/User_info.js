@@ -1,10 +1,19 @@
 const User = require("../schema/user");
+const jwt = require("jsonwebtoken");
+const getUser = require("../auth/getuser");
+const generateToken = require("../auth/generatetoken");
+const generatetoken = require("../auth/generatetoken");
+
+require("dotenv").config();
 
 module.exports = {
     Query: {
         async user_login(parent, args, context, info) {
             let user = null,
-                wrongpassword = false;
+                wrongpassword = false,
+                token = "",
+                refreshToken = "";
+
             await User.findOne(
                 { Username: args.data.Username },
                 (err, result) => {
@@ -18,13 +27,26 @@ module.exports = {
                         ) {
                             wrongpassword = true;
                         }
+                        token = generatetoken({
+                            _id: user._id,
+                            Username: user.Username,
+                        });
+
+                        refreshToken = jwt.sign(
+                            {
+                                _id: user._id,
+                                Username: user.Username,
+                            },
+                            process.env.REFRESH_TOKEN
+                        );
                     }
                 }
             );
+
             return user !== null
                 ? wrongpassword
                     ? new Error("Incorrect Password")
-                    : user
+                    : { Token: token, RefreshToken: refreshToken }
                 : new Error("Invalid Username");
         },
     },
@@ -46,14 +68,16 @@ module.exports = {
             });
 
             await user.save((err, result) => {
-                console.log(result._id);
+                jwt.sign();
             });
             return user;
         },
 
-        async add_friend(parent, args, context, info) {
+        async add_friend(parent, args, { req }, info) {
             let added = false;
-            await User.findByIdAndUpdate(args.data._id, {
+            const user = getUser(req);
+
+            await User.findByIdAndUpdate(user._id, {
                 Following: [
                     {
                         _id: args.data.UserId,
@@ -67,8 +91,8 @@ module.exports = {
                 {
                     Followers: [
                         {
-                            _id: args.data._id,
-                            Username: args.data.Myname,
+                            _id: user._id,
+                            Username: user.Username,
                         },
                     ],
                 },
@@ -82,16 +106,18 @@ module.exports = {
             return added;
         },
 
-        async remove_friend(parent, args, context, info) {
+        async remove_friend(parent, args, { req }, info) {
             let removed = false;
 
-            await User.findByIdAndUpdate(args.data.UserId, {
+            const user = getUser(req);
+
+            await User.findByIdAndUpdate(user._id, {
                 $pull: { Following: { _id: args.data.FriendId } },
             }).exec();
 
             try {
                 await User.findByIdAndUpdate(args.data.FriendId, {
-                    $pull: { Followers: { _id: args.data.UserId } },
+                    $pull: { Followers: { _id: user._id } },
                 });
                 removed = true;
             } catch {

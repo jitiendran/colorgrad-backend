@@ -4,7 +4,7 @@ type Query {
   getPopularColors: [Colors_type]
   getMyGradients(data: getColorInput!): [Gradients_type]
   getGradients: [Gradients_type]
-  user_login(data: user_loginInput!): user_info
+  user_login(data: user_loginInput!): token!
 }
 
 type Mutation {
@@ -77,19 +77,21 @@ input user_registerInput {
 }
 
 input add_friendInput {
-  _id: String!
-  Myname: String!
   UserId: String!
   Username: String!
 }
 
 input remove_friendInput {
-  UserId: String!
   FriendId: String!
 }
 
 type added_friend {
   Added: Boolean!
+}
+
+type token {
+  Token: String!
+  RefreshToken: String!
 }
 
 input add_favouriteColorInput {
