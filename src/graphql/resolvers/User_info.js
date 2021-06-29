@@ -3,57 +3,49 @@ const jwt = require("jsonwebtoken");
 const getUser = require("../auth/getuser");
 const generatetoken = require("../auth/generatetoken");
 const randtoken = require("rand-token");
+const bcrypt = require("bcryptjs");
 
 require("dotenv").config();
 
 module.exports = {
     Query: {
-        async user_login(parent, args, context, info) {
-            let user = null,
-                wrongpassword = false,
-                token = "",
+        async user_login(parent, { data }, context, info) {
+            let token = "",
                 refreshToken = "";
 
-            await User.findOne(
-                { Username: args.data.Username },
-                (err, result) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        user = result;
-                    }
-                }
-            );
+            const user = await User.findOne({
+                Username: data.Username,
+            }).exec();
 
-            console.log(user);
-
-            if (user !== null && user.Password !== args.data.Password) {
-                wrongpassword = true;
-            } else if (user !== null && user.Password === args.data.Password) {
-                token = generatetoken(
-                    {
-                        _id: user?._id,
-                        Username: user?.Username,
-                    },
-                    process.env.ACCESS_TOKEN
+            if (user) {
+                const isMatching = await bcrypt.compare(
+                    data.Password,
+                    user.Password
                 );
 
-                refreshToken = randtoken.uid(64);
+                if (isMatching) {
+                    token = generatetoken(
+                        { _id: user?._id, Username: user?.Username },
+                        process.env.ACCESS_TOKEN
+                    );
+                    refreshToken = randtoken.uid(64);
+                } else {
+                    throw new Error("Incorrect Password");
+                }
+            } else {
+                throw new Error("Invalid Username");
             }
-
-            return user !== null
-                ? wrongpassword
-                    ? new Error("Incorrect Password")
-                    : { Token: token, RefreshToken: refreshToken }
-                : new Error("Invalid Username");
+            return { Token: token, RefreshToken: refreshToken };
         },
     },
     Mutation: {
-        async user_register(parent, args, context, info) {
+        async user_register(parent, { data }, context, info) {
+            const hashedPassword = await bcrypt.hash(String(data.Password), 10);
+
             const user = new User({
-                Username: args.data.Username,
-                Email: args.data.Email,
-                Password: args.data.Password,
+                Username: data.Username,
+                Email: data.Email,
+                Password: hashedPassword,
                 LinkedinProfile: null,
                 GithubProfile: null,
                 Colors: [],
@@ -72,21 +64,21 @@ module.exports = {
             return user;
         },
 
-        async refresh_token(parent, args, { req }, info) {
+        async refresh_token(parent, { data }, { req }, info) {
             let output = { Token: null, RefreshToken: null };
 
             await User.findByIdAndUpdate(
-                args.data.UserId,
-                { Token: args.RefreshToken },
+                data.UserId,
+                { Token: data.RefreshToken },
                 (err, result) => {
                     if (err) console.log(err);
                     else {
                         output.Token = generatetoken(
                             {
-                                _id: args.data.UserId,
-                                Username: args.data.Username,
+                                _id: data.UserId,
+                                Username: data.Username,
                             },
-                            args.data.RefreshToken
+                            data.RefreshToken
                         );
                         output.RefreshToken = randtoken.uid(64);
                     }
@@ -95,21 +87,21 @@ module.exports = {
             return output;
         },
 
-        async add_friend(parent, args, { req }, info) {
+        async add_friend(parent, { data }, { req }, info) {
             let added = false;
             const user = getUser(req);
 
             await User.findByIdAndUpdate(user._id, {
                 Following: [
                     {
-                        _id: args.data.UserId,
-                        Username: args.data.Username,
+                        _id: data.UserId,
+                        Username: data.Username,
                     },
                 ],
             }).exec();
 
             await User.findByIdAndUpdate(
-                args.data.UserId,
+                data.UserId,
                 {
                     Followers: [
                         {
@@ -128,17 +120,17 @@ module.exports = {
             return added;
         },
 
-        async remove_friend(parent, args, { req }, info) {
+        async remove_friend(parent, { data }, { req }, info) {
             let removed = false;
 
             const user = getUser(req);
 
             await User.findByIdAndUpdate(user._id, {
-                $pull: { Following: { _id: args.data.FriendId } },
+                $pull: { Following: { _id: data.FriendId } },
             }).exec();
 
             try {
-                await User.findByIdAndUpdate(args.data.FriendId, {
+                await User.findByIdAndUpdate(data.FriendId, {
                     $pull: { Followers: { _id: user._id } },
                 });
                 removed = true;
@@ -148,18 +140,18 @@ module.exports = {
             return removed;
         },
 
-        async add_favouriteColor(parent, args, context, info) {
+        async add_favouriteColor(parent, { data }, context, info) {
             let added = false;
 
             await User.findByIdAndUpdate(
-                { _id: args.data.UserId },
+                { _id: data.UserId },
                 {
                     Colors: [
                         {
-                            ColorId: args.data.ColorId,
-                            Colors: args.data.Colors,
-                            Type: args.data.Type,
-                            UsedBy: args.data.UsedBy,
+                            ColorId: data.ColorId,
+                            Colors: data.Colors,
+                            Type: data.Type,
+                            UsedBy: data.UsedBy,
                         },
                     ],
                 },
@@ -174,19 +166,19 @@ module.exports = {
             return added;
         },
 
-        async add_favouriteGradient(parent, args, context, info) {
+        async add_favouriteGradient(parent, { data }, context, info) {
             let updated = false;
 
             await User.findByIdAndUpdate(
-                { _id: args.data.UserId },
+                { _id: data.UserId },
                 {
                     Gradients: [
                         {
-                            GradientId: args.data.GradientId,
-                            Colors: args.data.Colors,
-                            Type: args.data.Type,
-                            Direction: args.data.Direction,
-                            UsedBy: args.data.UsedBy,
+                            GradientId: data.GradientId,
+                            Colors: data.Colors,
+                            Type: data.Type,
+                            Direction: data.Direction,
+                            UsedBy: data.UsedBy,
                         },
                     ],
                 },
@@ -201,12 +193,12 @@ module.exports = {
             return updated;
         },
 
-        async remove_favouriteColor(parent, args, context, info) {
+        async remove_favouriteColor(parent, { data }, context, info) {
             let removed = false;
 
             await User.findByIdAndUpdate(
-                args.data.UserId,
-                { $pull: { Colors: { ColorId: args.data.ColorId } } },
+                data.UserId,
+                { $pull: { Colors: { ColorId: data.ColorId } } },
                 (err, result) => {
                     if (err) console.log(err);
                     else {
@@ -218,12 +210,12 @@ module.exports = {
             return removed;
         },
 
-        async remove_favouriteGradient(parent, args, context, info) {
+        async remove_favouriteGradient(parent, { data }, context, info) {
             let removed = false;
 
             await User.findByIdAndUpdate(
-                args.data.UserId,
-                { $pull: { Gradients: { GradientId: args.data.GradientId } } },
+                data.UserId,
+                { $pull: { Gradients: { GradientId: data.GradientId } } },
                 (err, result) => {
                     if (err) console.log(err);
                     else {
