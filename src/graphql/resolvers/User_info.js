@@ -14,8 +14,6 @@ module.exports = {
                 token = "",
                 refreshToken = "";
 
-            console.log(args.data);
-
             await User.findOne(
                 { Username: args.data.Username },
                 (err, result) => {
@@ -23,25 +21,25 @@ module.exports = {
                         console.log(err);
                     } else {
                         user = result;
-                        if (
-                            user !== null &&
-                            result.Password !== args.data.Password
-                        ) {
-                            wrongpassword = true;
-                        } else {
-                            token = generatetoken(
-                                {
-                                    _id: user._id,
-                                    Username: user.Username,
-                                },
-                                process.env.ACCESS_TOKEN
-                            );
-
-                            refreshToken = randtoken.uid(64);
-                        }
                     }
                 }
             );
+
+            console.log(user);
+
+            if (user !== null && user.Password !== args.data.Password) {
+                wrongpassword = true;
+            } else if (user !== null && user.Password === args.data.Password) {
+                token = generatetoken(
+                    {
+                        _id: user?._id,
+                        Username: user?.Username,
+                    },
+                    process.env.ACCESS_TOKEN
+                );
+
+                refreshToken = randtoken.uid(64);
+            }
 
             return user !== null
                 ? wrongpassword
