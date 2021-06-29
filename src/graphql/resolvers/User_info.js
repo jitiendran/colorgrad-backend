@@ -1,5 +1,4 @@
 const User = require("../schema/user");
-const jwt = require("jsonwebtoken");
 const getUser = require("../auth/getuser");
 const generatetoken = require("../auth/generatetoken");
 const randtoken = require("rand-token");
@@ -61,6 +60,7 @@ module.exports = {
             await user.save((err, result) => {
                 console.log(result);
             });
+
             return user;
         },
 
@@ -84,11 +84,13 @@ module.exports = {
                     }
                 }
             );
+
             return output;
         },
 
         async add_friend(parent, { data }, { req }, info) {
             let added = false;
+
             const user = getUser(req);
 
             await User.findByIdAndUpdate(user._id, {
@@ -100,23 +102,21 @@ module.exports = {
                 ],
             }).exec();
 
-            await User.findByIdAndUpdate(
-                data.UserId,
-                {
+            try {
+                await User.findByIdAndUpdate(data.UserId, {
                     Followers: [
                         {
                             _id: user._id,
                             Username: user.Username,
                         },
                     ],
-                },
-                (err, result) => {
-                    if (err) console.log(err);
-                    else {
-                        added = true;
-                    }
-                }
-            );
+                }).exec();
+
+                added = true;
+            } catch {
+                throw new Error("Cannot add friend");
+            }
+
             return added;
         },
 
@@ -132,20 +132,23 @@ module.exports = {
             try {
                 await User.findByIdAndUpdate(data.FriendId, {
                     $pull: { Followers: { _id: user._id } },
-                });
+                }).exec();
+
                 removed = true;
             } catch {
                 throw new Error("Cannot Remove the Friend");
             }
+
             return removed;
         },
 
-        async add_favouriteColor(parent, { data }, context, info) {
+        async add_favouriteColor(parent, { data }, { req }, info) {
             let added = false;
 
-            await User.findByIdAndUpdate(
-                { _id: data.UserId },
-                {
+            const user = getUser(req);
+
+            try {
+                await User.findByIdAndUpdate(user._id, {
                     Colors: [
                         {
                             ColorId: data.ColorId,
@@ -154,24 +157,23 @@ module.exports = {
                             UsedBy: data.UsedBy,
                         },
                     ],
-                },
-                (err, result) => {
-                    if (err) console.log(err);
-                    else {
-                        added = true;
-                    }
-                }
-            );
+                }).exec();
+
+                added = true;
+            } catch {
+                throw new Error("Cannot add favourite color");
+            }
 
             return added;
         },
 
-        async add_favouriteGradient(parent, { data }, context, info) {
+        async add_favouriteGradient(parent, { data }, { req }, info) {
             let updated = false;
 
-            await User.findByIdAndUpdate(
-                { _id: data.UserId },
-                {
+            const user = getUser(req);
+
+            try {
+                await User.findByIdAndUpdate(user._id, {
                     Gradients: [
                         {
                             GradientId: data.GradientId,
@@ -181,48 +183,48 @@ module.exports = {
                             UsedBy: data.UsedBy,
                         },
                     ],
-                },
-                (err, result) => {
-                    if (err) console.log(err);
-                    else {
-                        updated = true;
-                    }
-                }
-            );
+                }).exec();
+
+                updated = true;
+            } catch {
+                throw new Error("Cannot add favourite gradient");
+            }
 
             return updated;
         },
 
-        async remove_favouriteColor(parent, { data }, context, info) {
+        async remove_favouriteColor(parent, { data }, { req }, info) {
             let removed = false;
 
-            await User.findByIdAndUpdate(
-                data.UserId,
-                { $pull: { Colors: { ColorId: data.ColorId } } },
-                (err, result) => {
-                    if (err) console.log(err);
-                    else {
-                        removed = true;
-                    }
-                }
-            );
+            const user = getUser(req);
+
+            try {
+                await User.findByIdAndUpdate(user._id, {
+                    $pull: { Colors: { ColorId: data.ColorId } },
+                }).exec();
+
+                removed = true;
+            } catch {
+                throw new Error("Cannot remove the color");
+            }
 
             return removed;
         },
 
-        async remove_favouriteGradient(parent, { data }, context, info) {
+        async remove_favouriteGradient(parent, { data }, { req }, info) {
             let removed = false;
 
-            await User.findByIdAndUpdate(
-                data.UserId,
-                { $pull: { Gradients: { GradientId: data.GradientId } } },
-                (err, result) => {
-                    if (err) console.log(err);
-                    else {
-                        removed = true;
-                    }
-                }
-            );
+            const user = getUser(req);
+
+            try {
+                await User.findByIdAndUpdate(user._id, {
+                    $pull: { Gradients: { GradientId: data.GradientId } },
+                }).exec();
+
+                removed = true;
+            } catch {
+                throw new Error("Cannot remove Gradient");
+            }
 
             return removed;
         },

@@ -13,11 +13,12 @@
 | GithubProfile   | String      |
 | Colors          | [Colors]    |
 | Gradients       | [Gradients] |
-| Followers       | [ ]         |
-| Following       | [ ]         |
+| Followers       | [User]      |
+| Following       | [User]      |
 | No_Of_Colors    | Number      |
 | No_Of_Gradients | Number      |
 | Rating          | Number      |
+| Token           | String      |
 
 ## Colors
 

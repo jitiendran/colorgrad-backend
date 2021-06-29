@@ -103,7 +103,6 @@ input refresh_tokenInput {
 }
 
 input add_favouriteColorInput {
-  UserId: String!
   ColorId: String!
   Colors: String!
   Type: String!
@@ -111,7 +110,6 @@ input add_favouriteColorInput {
 }
 
 input add_favouriteGradientInput {
-  UserId: String!
   GradientId: String!
   Colors: [String]!
   Type: String!
@@ -120,12 +118,10 @@ input add_favouriteGradientInput {
 }
 
 input remove_favouriteColorInput {
-  UserId: String!
   ColorId: String!
 }
 
 input remove_favouriteGradientInput {
-  UserId: String!
   GradientId: String!
 }
 
