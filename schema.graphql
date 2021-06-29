@@ -13,6 +13,7 @@ type Mutation {
   insertGradient(data: insertGradientInput!): Gradients_type
   copyGradient(data: copyGradientInput!): Boolean!
   user_register(data: user_registerInput!): user_info
+  refresh_token(data: refresh_tokenInput!): token!
   add_friend(data: add_friendInput!): Boolean!
   remove_friend(data: remove_friendInput!): Boolean!
   add_favouriteColor(data: add_favouriteColorInput!): Boolean!
@@ -91,6 +92,12 @@ type added_friend {
 
 type token {
   Token: String!
+  RefreshToken: String!
+}
+
+input refresh_tokenInput {
+  UserId: String!
+  Username: String!
   RefreshToken: String!
 }
 

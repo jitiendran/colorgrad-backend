@@ -4,6 +4,7 @@ require("dotenv").config();
 
 module.exports = (req) => {
     const header = req.headers.authorization;
+    console.log("This is header", header);
     if (!header) {
         throw new Error("Invalid Authentication");
     }

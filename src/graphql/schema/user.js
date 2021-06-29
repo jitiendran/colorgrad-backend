@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
     No_Of_Colors: Number,
     No_Of_Gradients: Number,
     Rating: Number,
+    Token: String,
 });
 
 module.exports = mongoose.model("user_info", userSchema);

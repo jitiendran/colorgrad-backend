@@ -1,8 +1,8 @@
 const User = require("../schema/user");
 const jwt = require("jsonwebtoken");
 const getUser = require("../auth/getuser");
-const generateToken = require("../auth/generatetoken");
 const generatetoken = require("../auth/generatetoken");
+const randtoken = require("rand-token");
 
 require("dotenv").config();
 
@@ -13,6 +13,8 @@ module.exports = {
                 wrongpassword = false,
                 token = "",
                 refreshToken = "";
+
+            console.log(args.data);
 
             await User.findOne(
                 { Username: args.data.Username },
@@ -26,19 +28,17 @@ module.exports = {
                             result.Password !== args.data.Password
                         ) {
                             wrongpassword = true;
-                        }
-                        token = generatetoken({
-                            _id: user._id,
-                            Username: user.Username,
-                        });
+                        } else {
+                            token = generatetoken(
+                                {
+                                    _id: user._id,
+                                    Username: user.Username,
+                                },
+                                process.env.ACCESS_TOKEN
+                            );
 
-                        refreshToken = jwt.sign(
-                            {
-                                _id: user._id,
-                                Username: user.Username,
-                            },
-                            process.env.REFRESH_TOKEN
-                        );
+                            refreshToken = randtoken.uid(64);
+                        }
                     }
                 }
             );
@@ -65,12 +65,36 @@ module.exports = {
                 No_Of_Colors: 0,
                 No_Of_Gradients: 0,
                 Rating: 0,
+                Token: null,
             });
 
             await user.save((err, result) => {
-                jwt.sign();
+                console.log(result);
             });
             return user;
+        },
+
+        async refresh_token(parent, args, { req }, info) {
+            let output = { Token: null, RefreshToken: null };
+
+            await User.findByIdAndUpdate(
+                args.data.UserId,
+                { Token: args.RefreshToken },
+                (err, result) => {
+                    if (err) console.log(err);
+                    else {
+                        output.Token = generatetoken(
+                            {
+                                _id: args.data.UserId,
+                                Username: args.data.Username,
+                            },
+                            args.data.RefreshToken
+                        );
+                        output.RefreshToken = randtoken.uid(64);
+                    }
+                }
+            );
+            return output;
         },
 
         async add_friend(parent, args, { req }, info) {
