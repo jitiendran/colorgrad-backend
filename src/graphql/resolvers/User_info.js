@@ -1,8 +1,11 @@
 const User = require("../schema/user");
+const Color = require("../schema/color");
+const Gradient = require("../schema/gradient");
 const getUser = require("../auth/getuser");
 const generatetoken = require("../auth/generatetoken");
 const randtoken = require("rand-token");
 const bcrypt = require("bcryptjs");
+const gradient = require("../schema/gradient");
 
 require("dotenv").config();
 
@@ -36,6 +39,42 @@ module.exports = {
             }
             return { Token: token, RefreshToken: refreshToken };
         },
+
+        async get_user(parent, { data }, context, info) {
+            let user = null;
+
+            try {
+                user = await User.findOne({ _id: data.UserId }).exec();
+            } catch {
+                throw new Error("Cannot get User");
+            }
+
+            return user;
+        },
+
+        async get_color(parent, { data }, context, info) {
+            let color = null;
+
+            try {
+                color = await Color.find({ UserId: data.UserId }).exec();
+            } catch {
+                throw new Error("Cannot get Colors");
+            }
+
+            return color;
+        },
+
+        async get_gradient(parent, { data }, context, info) {
+            let gradient = null;
+
+            try {
+                gradient = await Gradient.find({ UserId: data.UserId }).exec();
+            } catch {
+                throw new Error("Cannot get Gradients");
+            }
+
+            return gradient;
+        },
     },
     Mutation: {
         async user_register(parent, { data }, context, info) {
@@ -55,6 +94,7 @@ module.exports = {
                 No_Of_Gradients: 0,
                 Rating: 0,
                 Token: null,
+                Profile: null,
             });
 
             await user.save((err, result) => {

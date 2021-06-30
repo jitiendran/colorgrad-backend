@@ -1,5 +1,8 @@
 type Query {
     user_login(data: user_loginInput!): token!
+    get_user(data: get_userInput!): user_info!
+    get_color(data: get_userInput!): [Colors_type]!
+    get_gradient(data: get_userInput!): [Gradients_type]!
 }
 
 type Mutation {
@@ -17,6 +20,10 @@ type Mutation {
 input user_loginInput {
     Username: String!
     Password: String!
+}
+
+input get_userInput {
+    UserId: String!
 }
 
 input user_registerInput {
@@ -72,6 +79,11 @@ input remove_favouriteGradientInput {
     GradientId: String!
 }
 
+type friends {
+    _id: String!
+    Username: String!
+}
+
 type user_info {
     _id: String
     Username: String
@@ -81,9 +93,10 @@ type user_info {
     GithubProfile: String
     Colors: [Colors_type]
     Gradients: [Gradients_type]
-    Followers: [String]
-    Following: [String]
+    Followers: [friends]
+    Following: [friends]
     No_Of_Colors: Int
     No_Of_Gradients: Int
-    Rating: Int
+    Rating: Float!
+    Profile: String
 }

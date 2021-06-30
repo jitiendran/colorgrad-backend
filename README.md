@@ -19,6 +19,7 @@
 | No_Of_Gradients | Number      |
 | Rating          | Number      |
 | Token           | String      |
+| Profile         | String      |
 
 ## Colors
 

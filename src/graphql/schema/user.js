@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
     No_Of_Gradients: Number,
     Rating: Number,
     Token: String,
+    Profile: String,
 });
 
 module.exports = mongoose.model("user_info", userSchema);
