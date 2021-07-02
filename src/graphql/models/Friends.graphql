@@ -1,0 +1,11 @@
+type Query {
+    get_followers: [friends]!
+    get_following: [friends]!
+}
+
+type friends {
+    _id: String!
+    Username: String!
+    Email: String!
+    Profile: String
+}

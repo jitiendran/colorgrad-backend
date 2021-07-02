@@ -2,6 +2,8 @@ type Query {
   getMyColors(data: getColorsInput!): [Colors_type]
   getColors: [Colors_type]
   getPopularColors: [Colors_type]
+  get_followers: [friends]!
+  get_following: [friends]!
   getMyGradients(data: getColorInput!): [Gradients_type]
   getGradients: [Gradients_type]
   user_login(data: user_loginInput!): token!
@@ -47,6 +49,13 @@ input getColorsInput {
   UserId: String!
 }
 
+type friends {
+  _id: String!
+  Username: String!
+  Email: String!
+  Profile: String
+}
+
 type Gradients_type {
   _id: String
   Colors: [String]
@@ -87,7 +96,6 @@ input user_registerInput {
 
 input add_friendInput {
   UserId: String!
-  Username: String!
 }
 
 input remove_friendInput {
@@ -130,11 +138,6 @@ input remove_favouriteColorInput {
 
 input remove_favouriteGradientInput {
   GradientId: String!
-}
-
-type friends {
-  _id: String!
-  Username: String!
 }
 
 type user_info {

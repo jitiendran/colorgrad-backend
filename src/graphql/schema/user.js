@@ -23,8 +23,12 @@ const userSchema = new mongoose.Schema({
             UsedBy: Number,
         },
     ],
-    Followers: [{ _id: String, Username: String }],
-    Following: [{ _id: String, Username: String }],
+    Followers: [
+        { _id: String, Username: String, Email: String, Profile: String },
+    ],
+    Following: [
+        { _id: String, Username: String, Email: String, Profile: String },
+    ],
     No_Of_Colors: Number,
     No_Of_Gradients: Number,
     Rating: Number,

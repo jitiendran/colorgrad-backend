@@ -34,7 +34,6 @@ input user_registerInput {
 
 input add_friendInput {
     UserId: String!
-    Username: String!
 }
 
 input remove_friendInput {

@@ -27,7 +27,11 @@ module.exports = {
 
                 if (isMatching) {
                     token = generatetoken(
-                        { _id: user?._id, Username: user?.Username },
+                        {
+                            _id: user?._id,
+                            Username: user?.Username,
+                            Expire: Date.now() + 600,
+                        },
                         process.env.ACCESS_TOKEN
                     );
                     refreshToken = randtoken.uid(64);
@@ -117,8 +121,9 @@ module.exports = {
                             {
                                 _id: data.UserId,
                                 Username: data.Username,
+                                Expire: Date.now() + 600,
                             },
-                            data.RefreshToken
+                            process.env.ACCESS_TOKEN
                         );
                         output.RefreshToken = randtoken.uid(64);
                     }
@@ -131,25 +136,37 @@ module.exports = {
         async add_friend(parent, { data }, { req }, info) {
             let added = false;
 
-            const user = getUser(req);
+            const userId = getUser(req)._id;
+
+            const user = await User.findOne({ _id: userId });
+
+            const friend = await User.findOne({ _id: data.UserId }).exec();
 
             await User.findByIdAndUpdate(user._id, {
-                Following: [
-                    {
-                        _id: data.UserId,
-                        Username: data.Username,
-                    },
-                ],
+                $push: {
+                    Following: [
+                        {
+                            _id: data.UserId,
+                            Username: friend.Username,
+                            Email: friend.Email,
+                            Profile: friend.Profile || null,
+                        },
+                    ],
+                },
             }).exec();
 
             try {
                 await User.findByIdAndUpdate(data.UserId, {
-                    Followers: [
-                        {
-                            _id: user._id,
-                            Username: user.Username,
-                        },
-                    ],
+                    $push: {
+                        Followers: [
+                            {
+                                _id: user._id,
+                                Username: user.Username,
+                                Email: user.Email,
+                                Profile: user.Profile || null,
+                            },
+                        ],
+                    },
                 }).exec();
 
                 added = true;
