@@ -2,8 +2,8 @@ type Query {
   getMyColors(data: getColorsInput!): [Colors_type]
   getColors: [Colors_type]
   getPopularColors: [Colors_type]
-  get_followers: [friends]!
-  get_following: [friends]!
+  get_followers(data: friendInput!): [friends]!
+  get_following(data: friendInput!): [friends]!
   getMyGradients(data: getColorInput!): [Gradients_type]
   getGradients: [Gradients_type]
   user_login(data: user_loginInput!): token!
@@ -47,6 +47,10 @@ input copyColorsInput {
 
 input getColorsInput {
   UserId: String!
+}
+
+input friendInput {
+  Id: String!
 }
 
 type friends {

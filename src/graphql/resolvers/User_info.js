@@ -5,7 +5,6 @@ const getUser = require("../auth/getuser");
 const generatetoken = require("../auth/generatetoken");
 const randtoken = require("rand-token");
 const bcrypt = require("bcryptjs");
-const gradient = require("../schema/gradient");
 
 require("dotenv").config();
 
@@ -121,7 +120,7 @@ module.exports = {
                             {
                                 _id: data.UserId,
                                 Username: data.Username,
-                                Expire: Date.now() + 600,
+                                Expire: Date.now() + 1800,
                             },
                             process.env.ACCESS_TOKEN
                         );

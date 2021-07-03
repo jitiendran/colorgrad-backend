@@ -1,6 +1,10 @@
 type Query {
-    get_followers: [friends]!
-    get_following: [friends]!
+    get_followers(data: friendInput!): [friends]!
+    get_following(data: friendInput!): [friends]!
+}
+
+input friendInput {
+    Id: String!
 }
 
 type friends {

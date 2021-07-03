@@ -1,15 +1,12 @@
-import getUser from "../auth/getuser";
 import User from "../schema/user";
 
 module.exports = {
     Query: {
-        async get_followers(parent, args, { req }, info) {
+        async get_followers(parent, { data }, { req }, info) {
             let followers = [];
 
-            const user = getUser(req);
-
             try {
-                const foundUser = await User.findOne({ _id: user._id }).exec();
+                const foundUser = await User.findOne({ _id: data.Id }).exec();
                 followers = foundUser.Followers;
             } catch {
                 throw new Error("Cannot get followers");
@@ -18,13 +15,11 @@ module.exports = {
             return followers;
         },
 
-        async get_following(parent, args, { req }, info) {
+        async get_following(parent, { data }, { req }, info) {
             let following = [];
 
-            const user = getUser(req);
-
             try {
-                const foundUser = await User.findOne({ _id: user._id }).exec();
+                const foundUser = await User.findOne({ _id: data.Id }).exec();
                 following = foundUser.Following;
             } catch {
                 throw new Error("Cannot get Following");
