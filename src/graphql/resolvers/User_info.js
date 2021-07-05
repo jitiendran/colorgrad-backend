@@ -1,10 +1,10 @@
-const User = require("../schema/user");
-const Color = require("../schema/color");
-const Gradient = require("../schema/gradient");
-const getUser = require("../auth/getuser");
-const generatetoken = require("../auth/generatetoken");
-const randtoken = require("rand-token");
-const bcrypt = require("bcryptjs");
+import User from "../schema/user";
+import Color from "../schema/color";
+import Gradient from "../schema/gradient";
+import getUser from "../auth/getuser";
+import generatetoken from "../auth/generatetoken";
+import randtoken from "rand-token";
+import bcrypt from "bcryptjs";
 
 require("dotenv").config();
 
@@ -205,14 +205,16 @@ module.exports = {
 
             try {
                 await User.findByIdAndUpdate(user._id, {
-                    Colors: [
-                        {
-                            ColorId: data.ColorId,
-                            Colors: data.Colors,
-                            Type: data.Type,
-                            UsedBy: data.UsedBy,
-                        },
-                    ],
+                    $push: {
+                        Colors: [
+                            {
+                                ColorId: data.ColorId,
+                                Colors: data.Colors,
+                                Type: data.Type,
+                                UsedBy: data.UsedBy,
+                            },
+                        ],
+                    },
                 }).exec();
 
                 added = true;
@@ -230,15 +232,17 @@ module.exports = {
 
             try {
                 await User.findByIdAndUpdate(user._id, {
-                    Gradients: [
-                        {
-                            GradientId: data.GradientId,
-                            Colors: data.Colors,
-                            Type: data.Type,
-                            Direction: data.Direction,
-                            UsedBy: data.UsedBy,
-                        },
-                    ],
+                    $push: {
+                        Gradients: [
+                            {
+                                GradientId: data.GradientId,
+                                Colors: data.Colors,
+                                Type: data.Type,
+                                Direction: data.Direction,
+                                UsedBy: data.UsedBy,
+                            },
+                        ],
+                    },
                 }).exec();
 
                 updated = true;

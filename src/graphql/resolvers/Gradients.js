@@ -1,14 +1,19 @@
-const Gradient = require("../schema/gradient");
-const User = require("../schema/user");
-const Rating = require("../functions/rating");
-const Uses = require("../functions/usedby");
-const Contributions = require("../functions/contribution");
-const FindUser = require("../functions/finduser_by_gradient");
+import getUser from "../auth/getuser";
+import Gradient from "../schema/gradient";
+import User from "../schema/user";
+import Rating from "../functions/rating";
+import Uses from "../functions/usedby";
+import Contributions from "../functions/contribution";
 
 module.exports = {
     Query: {
         async getGradients() {
-            let gradients = await Gradient.find({}).lean();
+            let gradients = null;
+            try {
+                gradients = await Gradient.find({}).lean();
+            } catch {
+                throw new Error("Cannot get Gradients");
+            }
             return gradients;
         },
 
@@ -22,76 +27,74 @@ module.exports = {
             });
             return gradient;
         },
+        async getFavouriteGradients(parent, args, { req }, info) {
+            const user = getUser(req);
+
+            const myUser = await User.findOne({ _id: user._id }).exec();
+
+            return myUser.Gradients;
+        },
     },
     Mutation: {
-        async insertGradient(parent, args, context, info) {
+        async insertGradient(parent, { data }, context, info) {
             const gradient = new Gradient({
-                UserId: args.data.UserId,
-                Colors: args.data.Colors,
-                Type: args.data.Type,
-                Direction: args.data.Direction,
+                UserId: data.UserId,
+                Colors: data.Colors,
+                Type: data.Type,
+                Direction: data.Direction,
                 UsedBy: 0,
             });
 
-            await gradient.save(async (err, result) => {
-                if (err) console.log(err);
-                else {
-                    try {
-                        await User.findByIdAndUpdate(
-                            { _id: args.data.UserId },
-                            { $inc: { No_Of_Gradients: 1 } },
-                            { upsert: true, new: true }
-                        ).exec();
+            let IsInserted = false;
 
-                        console.log("Updated !!!");
+            try {
+                await gradient.save();
 
-                        await User.findOneAndUpdate(
-                            { _id: args.data.UserId },
-                            {
-                                Rating: await Rating(
-                                    await Contributions(args.data.UserId),
-                                    await Uses(args.data.UserId)
-                                ),
-                            },
-                            { new: true },
-                            (err, result) => {
-                                console.log("Rated");
-                            }
-                        );
-                    } catch {
-                        throw new Error("Cannot Update Rating");
-                    }
-                }
-            });
-            return gradient;
+                await User.findByIdAndUpdate(
+                    data.UserId,
+                    { $inc: { No_Of_Gradients: 1 } },
+                    { upsert: true, new: true }
+                ).exec();
+
+                IsInserted = true;
+
+                await User.findByIdAndUpdate(
+                    data.UserId,
+                    {
+                        Rating: await Rating(
+                            await Contributions(data.UserId),
+                            await Uses(data.UserId)
+                        ),
+                    },
+                    { new: true }
+                ).exec();
+            } catch {
+                throw new Error("Cannot Update Rating");
+            }
+            return IsInserted;
         },
 
-        async copyGradient(contact, args, context, info) {
+        async copyGradient(contact, { data }, context, info) {
             let update = false;
             try {
                 await Gradient.findByIdAndUpdate(
-                    { _id: args.data.GradientId },
+                    { _id: data.GradientId },
                     { $inc: { UsedBy: 1 } },
                     { upsert: true, new: true }
                 ).exec();
 
                 update = true;
 
-                const UserId = await FindUser(args.data.GradientId);
-
-                await User.findOneAndUpdate(
-                    { _id: UserId },
+                await User.findByIdAndUpdate(
+                    data.UserId,
                     {
                         Rating: await Rating(
-                            await Contributions(UserId),
-                            await Uses(UserId)
+                            await Contributions(data.UserId),
+                            await Uses(data.UserId)
                         ),
                     },
-                    { new: true },
-                    (err, result) => {
-                        console.log("Rated");
-                    }
-                );
+                    { new: true }
+                ).exec();
                 return update;
             } catch {
                 throw new Error("Cannot copy Gradient");

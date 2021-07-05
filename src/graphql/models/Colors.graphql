@@ -2,10 +2,11 @@ type Query {
     getMyColors(data: getColorsInput!): [Colors_type]
     getColors: [Colors_type]
     getPopularColors: [Colors_type]
+    getFavouriteColors: [Colors_type]
 }
 
 type Mutation {
-    insertColors(data: insertColorsInput!): Colors_type
+    insertColors(data: insertColorsInput!): Boolean!
     copyColors(data: copyColorsInput!): Boolean!
 }
 
@@ -14,6 +15,7 @@ type Colors_type {
     Colors: String
     Type: String
     UsedBy: Int
+    UserId: String
 }
 
 input insertColorsInput {
@@ -24,6 +26,7 @@ input insertColorsInput {
 
 input copyColorsInput {
     ColorId: String
+    UserId: String
 }
 
 input getColorsInput {

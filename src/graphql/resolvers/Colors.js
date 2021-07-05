@@ -1,20 +1,19 @@
-const Color = require("../schema/color");
-const User = require("../schema/user");
-const Rating = require("../functions/rating");
-const Uses = require("../functions/usedby");
-const Contributions = require("../functions/contribution");
-const FindUser = require("../functions/finduser_by_color");
+import getUser from "../auth/getuser";
+import Color from "../schema/color";
+import User from "../schema/user";
+import Rating from "../functions/rating";
+import Uses from "../functions/usedby";
+import Contributions from "../functions/contribution";
 
 module.exports = {
     Query: {
         async getColors() {
             let colors = null;
-            await Color.find({}, (err, result) => {
-                if (err) console.log(err);
-                else {
-                    colors = result;
-                }
-            });
+            try {
+                colors = await Color.find({}).lean();
+            } catch {
+                throw new Error("Cannot get Colors");
+            }
             return colors;
         },
 
@@ -33,75 +32,76 @@ module.exports = {
             let colors = await Color.find({}).lean();
             return colors;
         },
+
+        async getFavouriteColors(parent, { data }, { req }, info) {
+            const user = getUser(req);
+
+            const myUser = await User.findOne({ _id: user._id }).exec();
+
+            return myUser.Colors;
+        },
     },
     Mutation: {
-        async insertColors(parent, args, context, info) {
+        async insertColors(parent, { data }, context, info) {
             const color = new Color({
-                UserId: args.data.UserId,
-                Colors: args.data.Colors,
-                Type: args.data.Type,
+                UserId: data.UserId,
+                Colors: data.Colors,
+                Type: data.Type,
                 UsedBy: 0,
             });
 
-            await color.save(async (err, result) => {
-                if (err) console.log(err);
-                else {
-                    try {
-                        await User.findByIdAndUpdate(
-                            { _id: args.data.UserId },
-                            { $inc: { No_Of_Colors: 1 } },
-                            { upsert: true, new: true }
-                        ).exec();
+            let inserted = false;
 
-                        console.log("Updated !!!");
+            try {
+                await color.save();
 
-                        await User.findOneAndUpdate(
-                            { _id: args.data.UserId },
-                            {
-                                Rating: await Rating(
-                                    await Contributions(args.data.UserId),
-                                    await Uses(args.data.UserId)
-                                ),
-                            },
-                            { new: true },
-                            (err, result) => {
-                                console.log("Rated");
-                            }
-                        );
-                    } catch {
-                        throw new Error("Cannot update Rating");
-                    }
-                }
-            });
-            return color;
+                await User.findByIdAndUpdate(
+                    { _id: data.UserId },
+                    { $inc: { No_Of_Colors: 1 } },
+                    { upsert: true, new: true }
+                ).exec();
+
+                console.log("Updated !!!");
+
+                inserted = true;
+
+                await User.findByIdAndUpdate(
+                    { _id: data.UserId },
+                    {
+                        Rating: await Rating(
+                            await Contributions(data.UserId),
+                            await Uses(data.UserId)
+                        ),
+                    },
+                    { new: true }
+                ).exec();
+            } catch {
+                throw new Error("Cannot update Rating");
+            }
+            return inserted;
         },
 
-        async copyColors(parent, args, context, info) {
+        async copyColors(parent, { data }, context, info) {
             let updated = false;
             try {
                 await Color.findByIdAndUpdate(
-                    { _id: args.data.ColorId },
+                    data.ColorId,
                     { $inc: { UsedBy: 1 } },
                     { upsert: true, new: true }
                 ).exec();
 
                 updated = true;
 
-                const UserId = await FindUser(args.data.ColorId);
-
-                await User.findOneAndUpdate(
-                    { _id: UserId },
+                await User.findByIdAndUpdate(
+                    data.UserId,
                     {
                         Rating: await Rating(
-                            await Contributions(UserId),
-                            await Uses(UserId)
+                            await Contributions(data.UserId),
+                            await Uses(data.UserId)
                         ),
                     },
-                    { new: true },
-                    (err, result) => {
-                        console.log("Rated");
-                    }
-                );
+                    { new: true }
+                ).exec();
             } catch {
                 throw new Error("Cannot update");
             }

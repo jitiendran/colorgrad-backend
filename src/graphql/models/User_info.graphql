@@ -81,6 +81,8 @@ input remove_favouriteGradientInput {
 type friends {
     _id: String!
     Username: String!
+    Email: String!
+    Profile: String
 }
 
 type user_info {
