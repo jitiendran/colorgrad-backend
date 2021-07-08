@@ -3,6 +3,7 @@ type Query {
     get_user(data: get_userInput!): user_info!
     get_color(data: get_userInput!): [Colors_type]!
     get_gradient(data: get_userInput!): [Gradients_type]!
+    get_allusers: [user_info!]!
 }
 
 type Mutation {
@@ -15,6 +16,8 @@ type Mutation {
     add_favouriteGradient(data: add_favouriteGradientInput!): Boolean!
     remove_favouriteColor(data: remove_favouriteColorInput!): Boolean!
     remove_favouriteGradient(data: remove_favouriteGradientInput!): Boolean!
+    update_user(data: update_UserInput!): Boolean!
+    upload_profile(file: Upload): Boolean!
 }
 
 input user_loginInput {
@@ -24,6 +27,11 @@ input user_loginInput {
 
 input get_userInput {
     UserId: String!
+}
+
+input update_UserInput {
+    LinkedinProfile: String!
+    GithubProfile: String!
 }
 
 input user_registerInput {

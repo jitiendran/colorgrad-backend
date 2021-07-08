@@ -40,6 +40,8 @@ const server = new ApolloServer({
     }),
 });
 
+app.use("/files", express.static(__dirname + "/files"));
+
 server.applyMiddleware({ app });
 
 app.listen({ port: 4000 }, () => {

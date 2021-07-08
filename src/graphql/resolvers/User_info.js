@@ -5,6 +5,10 @@ import getUser from "../auth/getuser";
 import generatetoken from "../auth/generatetoken";
 import randtoken from "rand-token";
 import bcrypt from "bcryptjs";
+import fs from "fs";
+import path from "path";
+import glob from "glob";
+import getuser from "../auth/getuser";
 
 require("dotenv").config();
 
@@ -78,6 +82,17 @@ module.exports = {
 
             return gradient;
         },
+
+        async get_allusers(parent, { data }, { req }, info) {
+            let allUsers = [];
+            try {
+                allUsers = await User.find({}).lean();
+            } catch {
+                throw new Error("Cannot get all users");
+            }
+
+            return allUsers;
+        },
     },
     Mutation: {
         async user_register(parent, { data }, context, info) {
@@ -130,6 +145,23 @@ module.exports = {
             );
 
             return output;
+        },
+
+        async update_user(parent, { data }, { req }, info) {
+            let updated = false;
+
+            const user = getUser(req);
+
+            try {
+                await User.findByIdAndUpdate(user._id, {
+                    LinkedinProfile: data.LinkedinProfile,
+                    GithubProfile: data.GithubProfile,
+                }).exec();
+                updated = true;
+            } catch {
+                throw new Error("Cannot Update User");
+            }
+            return updated;
         },
 
         async add_friend(parent, { data }, { req }, info) {
@@ -287,6 +319,71 @@ module.exports = {
             }
 
             return removed;
+        },
+
+        async upload_profile(_, { file }, { req }, info) {
+            const { createReadStream, filename } = await file;
+            const ext = filename.substr(filename.lastIndexOf(".") + 1);
+            const user = getuser(req);
+            let fName = user.Username;
+            const fileName = fName + "." + ext;
+            let uploaded = false;
+
+            try {
+                let fPath = path.join(
+                    __dirname,
+                    "../../files/profile-photos",
+                    fName.toString()
+                );
+                fPath += ".[^" + ext + "]*";
+
+                glob(fPath, function (er, files) {
+                    files.forEach((file) => {
+                        if (fs.existsSync(file)) fs.unlinkSync(file);
+                    });
+                });
+                if (
+                    fs.existsSync(
+                        path.join(
+                            __dirname,
+                            "../../files/profile-photos",
+                            fileName
+                        )
+                    )
+                ) {
+                    fs.unlinkSync(
+                        path.join(
+                            __dirname,
+                            "../../files/profile-photos",
+                            fileName
+                        )
+                    );
+                }
+                await new Promise((res) =>
+                    createReadStream()
+                        .pipe(
+                            fs.createWriteStream(
+                                path.join(
+                                    __dirname,
+                                    "../../files/profile-photos",
+                                    fileName
+                                )
+                            )
+                        )
+                        .on("close", res)
+                );
+                const Photo = path.join("profile-photos", fileName);
+
+                await User.findByIdAndUpdate(user._id, {
+                    Profile: Photo,
+                }).exec();
+
+                uploaded = true;
+            } catch {
+                throw new Error("Cannot upload photo");
+            }
+
+            return uploaded;
         },
     },
 };
