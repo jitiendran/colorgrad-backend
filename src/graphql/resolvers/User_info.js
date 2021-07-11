@@ -33,6 +33,7 @@ module.exports = {
                         {
                             _id: user?._id,
                             Username: user?.Username,
+                            Profile: user?.Profile,
                             Expire: Date.now() + 600,
                         },
                         process.env.ACCESS_TOKEN
@@ -93,10 +94,20 @@ module.exports = {
 
             return allUsers;
         },
+        async check_username(parent, { data }, context, info) {
+            const { Username } = data;
+            let found = false;
+
+            const user = await User.findOne({ Username }).exec();
+
+            return user ? true : false;
+        },
     },
     Mutation: {
         async user_register(parent, { data }, context, info) {
             const hashedPassword = await bcrypt.hash(String(data.Password), 10);
+            let token = null,
+                refreshToken = null;
 
             const user = new User({
                 Username: data.Username,
@@ -115,11 +126,20 @@ module.exports = {
                 Profile: null,
             });
 
-            await user.save((err, result) => {
-                console.log(result);
-            });
+            const createdUser = await user.save();
 
-            return user;
+            token = generatetoken(
+                {
+                    _id: createdUser?._id,
+                    Username: createdUser?.Username,
+                    Profile: createdUser?.Profile,
+                    Expire: Date.now() + 600,
+                },
+                process.env.ACCESS_TOKEN
+            );
+            refreshToken = randtoken.uid(64);
+
+            return { Token: token, RefreshToken: refreshToken };
         },
 
         async refresh_token(parent, { data }, { req }, info) {

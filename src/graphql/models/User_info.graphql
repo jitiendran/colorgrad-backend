@@ -4,10 +4,11 @@ type Query {
     get_color(data: get_userInput!): [Colors_type]!
     get_gradient(data: get_userInput!): [Gradients_type]!
     get_allusers: [user_info!]!
+    check_username(data: check_usernameInput!): Boolean
 }
 
 type Mutation {
-    user_register(data: user_registerInput!): user_info
+    user_register(data: user_registerInput!): token!
     refresh_token(data: refresh_tokenInput!): token!
     user_logout: Boolean!
     add_friend(data: add_friendInput!): Boolean!
@@ -84,6 +85,10 @@ input remove_favouriteColorInput {
 
 input remove_favouriteGradientInput {
     GradientId: String!
+}
+
+input check_usernameInput {
+    Username: String!
 }
 
 type friends {
