@@ -1,10 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-import { ApolloServer, gql } from "apollo-server-express";
-import resolvers from "./graphql/index";
-import { readFileSync } from "fs";
-import { join } from "path";
+const { ApolloServer, gql } = require("apollo-server-express");
+const resolvers = require("./graphql/index");
+const { readFileSync } = require("fs");
+const { join } = require("path");
 
 require("dotenv").config();
 

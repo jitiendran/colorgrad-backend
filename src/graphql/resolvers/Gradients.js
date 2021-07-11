@@ -1,9 +1,9 @@
-import getUser from "../auth/getuser";
-import Gradient from "../schema/gradient";
-import User from "../schema/user";
-import Rating from "../functions/rating";
-import Uses from "../functions/usedby";
-import Contributions from "../functions/contribution";
+const getUser = require("../auth/getuser");
+const Gradient = require("../schema/gradient");
+const User = require("../schema/user");
+const Rating = require("../functions/rating");
+const Uses = require("../functions/usedby");
+const Contributions = require("../functions/contribution");
 
 module.exports = {
     Query: {

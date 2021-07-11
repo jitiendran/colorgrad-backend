@@ -1,4 +1,4 @@
-import User from "../schema/user";
+const User = require("../schema/user");
 
 module.exports = {
     Query: {

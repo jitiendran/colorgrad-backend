@@ -1,14 +1,14 @@
-import User from "../schema/user";
-import Color from "../schema/color";
-import Gradient from "../schema/gradient";
-import getUser from "../auth/getuser";
-import generatetoken from "../auth/generatetoken";
-import randtoken from "rand-token";
-import bcrypt from "bcryptjs";
-import fs from "fs";
-import path from "path";
-import glob from "glob";
-import getuser from "../auth/getuser";
+const User = require("../schema/user");
+const Color = require("../schema/color");
+const Gradient = require("../schema/gradient");
+const getUser = require("../auth/getuser");
+const generatetoken = require("../auth/generatetoken");
+const randtoken = require("rand-token");
+const bcrypt = require("bcryptjs");
+const fs = require("fs");
+const path = require("path");
+const glob = require("glob");
+const getuser = require("../auth/getuser");
 
 require("dotenv").config();
 
@@ -31,9 +31,9 @@ module.exports = {
                 if (isMatching) {
                     token = generatetoken(
                         {
-                            _id: user?._id,
-                            Username: user?.Username,
-                            Profile: user?.Profile,
+                            _id: user._id,
+                            Username: user.Username,
+                            Profile: user.Profile,
                             Expire: Date.now() + 600,
                         },
                         process.env.ACCESS_TOKEN
@@ -130,9 +130,9 @@ module.exports = {
 
             token = generatetoken(
                 {
-                    _id: createdUser?._id,
-                    Username: createdUser?.Username,
-                    Profile: createdUser?.Profile,
+                    _id: createdUser._id,
+                    Username: createdUser.Username,
+                    Profile: createdUser.Profile,
                     Expire: Date.now() + 600,
                 },
                 process.env.ACCESS_TOKEN
