@@ -5,10 +5,13 @@ const { ApolloServer, gql } = require("apollo-server-express");
 const resolvers = require("./graphql/index");
 const { readFileSync } = require("fs");
 const { join } = require("path");
+const { cors } = require("cors");
 
 require("dotenv").config();
 
 const app = express();
+
+app.use(cors);
 
 mongoose.connect(
     `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.md3ui.mongodb.net/colorgrad`,
