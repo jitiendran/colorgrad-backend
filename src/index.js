@@ -5,7 +5,7 @@ const { ApolloServer, gql } = require("apollo-server-express");
 const resolvers = require("./graphql/index");
 const { readFileSync } = require("fs");
 const { join } = require("path");
-const { cors } = require("cors");
+const cors = require("cors");
 
 require("dotenv").config();
 
