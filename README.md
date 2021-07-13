@@ -51,7 +51,7 @@ The rating will be calculated only on adding and when the uses increases
 
 1. Contribution = No_Of_Colors + No_Of_Gradients
 2. UsedBy_All = UsedBy_Colors + UsedBy_Gradients
-3. Rating = Contribution \* UsedBy_All / No_Of_Days in the month
+3. Rating += Contribution \* UsedBy_All / No_Of_Days in the month
 
 ## Operations
 
@@ -71,3 +71,5 @@ The rating will be calculated only on adding and when the uses increases
 14. Add Favourite Gradient
 15. Remove Favourite Color
 16. Remove Favourite Gradient
+17. Upload Profile Image
+18. Update Profile
